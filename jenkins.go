@@ -233,18 +233,24 @@ func (j *Jenkins) CreateJob(ctx context.Context, config string, options ...inter
 
 // Update a job.
 // If a job is exist, update its config
-func (j *Jenkins) UpdateJob(ctx context.Context, job string, config string) *Job {
+func (j *Jenkins) UpdateJob(ctx context.Context, job string, config string) (*Job, error) {
 	jobObj := Job{Jenkins: j, Raw: new(JobResponse), Base: "/job/" + job}
-	jobObj.UpdateConfig(ctx, config)
-	return &jobObj
+	err := jobObj.UpdateConfig(ctx, config)
+	if err != nil {
+		return nil, err
+	}
+	return &jobObj, nil
 }
 
 // Rename a job.
 // First parameter job old name, Second parameter job new name.
-func (j *Jenkins) RenameJob(ctx context.Context, job string, name string) *Job {
+func (j *Jenkins) RenameJob(ctx context.Context, job string, name string) (*Job, error) {
 	jobObj := Job{Jenkins: j, Raw: new(JobResponse), Base: "/job/" + job}
-	jobObj.Rename(ctx, name)
-	return &jobObj
+	_, err := jobObj.Rename(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	return &jobObj, nil
 }
 
 // Create a copy of a job.
